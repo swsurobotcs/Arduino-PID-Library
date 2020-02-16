@@ -13,12 +13,13 @@
 
 #include <PID_v1.h>
 
+
 /*Constructor (...)*********************************************************
  *    The parameters specified here are those for for which we can't set up
  *    reliable defaults, so we need to have the user set them.
  ***************************************************************************/
-PID::PID(double* Input, double* Output, double* Setpoint,
-        double Kp, double Ki, double Kd, int POn, int ControllerDirection)
+PID::PID(real* Input, real* Output, real* Setpoint,
+        real Kp, real Ki, real Kd, int POn, int ControllerDirection)
 {
     myOutput = Output;
     myInput = Input;
@@ -41,8 +42,8 @@ PID::PID(double* Input, double* Output, double* Setpoint,
  *    to use Proportional on Error without explicitly saying so
  ***************************************************************************/
 
-PID::PID(double* Input, double* Output, double* Setpoint,
-        double Kp, double Ki, double Kd, int ControllerDirection)
+PID::PID(real* Input, real* Output, real* Setpoint,
+        real Kp, real Ki, real Kd, int ControllerDirection)
     :PID::PID(Input, Output, Setpoint, Kp, Ki, Kd, P_ON_E, ControllerDirection)
 {
 
@@ -63,9 +64,9 @@ bool PID::Compute()
    if(timeChange>=SampleTime)
    {
       /*Compute all the working error variables*/
-      double input = *myInput;
-      double error = *mySetpoint - input;
-      double dInput = (input - lastInput);
+      real input = *myInput;
+      real error = *mySetpoint - input;
+      real dInput = (input - lastInput);
       outputSum+= (ki * error);
 
       /*Add Proportional on Measurement, if P_ON_M is specified*/
@@ -75,7 +76,7 @@ bool PID::Compute()
       else if(outputSum < outMin) outputSum= outMin;
 
       /*Add Proportional on Error, if P_ON_E is specified*/
-	   double output;
+	   real output;
       if(pOnE) output = kp * error;
       else output = 0;
 
@@ -99,7 +100,7 @@ bool PID::Compute()
  * it's called automatically from the constructor, but tunings can also
  * be adjusted on the fly during normal operation
  ******************************************************************************/
-void PID::SetTunings(double Kp, double Ki, double Kd, int POn)
+void PID::SetTunings(real Kp, real Ki, real Kd, int POn)
 {
    if (Kp<0 || Ki<0 || Kd<0) return;
 
@@ -108,7 +109,7 @@ void PID::SetTunings(double Kp, double Ki, double Kd, int POn)
 
    dispKp = Kp; dispKi = Ki; dispKd = Kd;
 
-   double SampleTimeInSec = ((double)SampleTime)/1000;
+   real SampleTimeInSec = ((real)SampleTime)/1000;
    kp = Kp;
    ki = Ki * SampleTimeInSec;
    kd = Kd / SampleTimeInSec;
@@ -124,7 +125,7 @@ void PID::SetTunings(double Kp, double Ki, double Kd, int POn)
 /* SetTunings(...)*************************************************************
  * Set Tunings using the last-rembered POn setting
  ******************************************************************************/
-void PID::SetTunings(double Kp, double Ki, double Kd){
+void PID::SetTunings(real Kp, real Ki, real Kd){
     SetTunings(Kp, Ki, Kd, pOn); 
 }
 
@@ -135,8 +136,8 @@ void PID::SetSampleTime(int NewSampleTime)
 {
    if (NewSampleTime > 0)
    {
-      double ratio  = (double)NewSampleTime
-                      / (double)SampleTime;
+      real ratio  = (real)NewSampleTime
+                      / (real)SampleTime;
       ki *= ratio;
       kd /= ratio;
       SampleTime = (unsigned long)NewSampleTime;
@@ -151,7 +152,7 @@ void PID::SetSampleTime(int NewSampleTime)
  *  want to clamp it from 0-125.  who knows.  at any rate, that can all be done
  *  here.
  **************************************************************************/
-void PID::SetOutputLimits(double Min, double Max)
+void PID::SetOutputLimits(real Min, real Max)
 {
    if(Min >= Max) return;
    outMin = Min;
@@ -216,9 +217,9 @@ void PID::SetControllerDirection(int Direction)
  * functions query the internal state of the PID.  they're here for display
  * purposes.  this are the functions the PID Front-end uses for example
  ******************************************************************************/
-double PID::GetKp(){ return  dispKp; }
-double PID::GetKi(){ return  dispKi;}
-double PID::GetKd(){ return  dispKd;}
+real PID::GetKp(){ return  dispKp; }
+real PID::GetKi(){ return  dispKi;}
+real PID::GetKd(){ return  dispKd;}
 int PID::GetMode(){ return  inAuto ? AUTOMATIC : MANUAL;}
 int PID::GetDirection(){ return controllerDirection;}
 
